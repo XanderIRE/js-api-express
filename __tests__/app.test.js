@@ -3,7 +3,7 @@ const db = require('../db/connection.js');
 const seed = require('../db/seed.js');
 const testData = require('../db/data/test-data/index.js');
 const app = require('../app.js');
-const { addTreasure } = require('../models/model.js');
+const { addTreasure, updateTreasure } = require('../models/model.js');
 
 beforeEach(() => seed(testData));
 afterAll(() => {
@@ -120,7 +120,7 @@ describe('POST /api/treasures', () => {
             }
 
             expect(body).toEqual(expected);
-        })
+        });
     });
     test('Can find the new treasure in the table', () => {
         return addTreasure({
@@ -138,6 +138,47 @@ describe('POST /api/treasures', () => {
             .then(({ rows: [body] }) => {
                 expect(body.treasure_name).toBe('New Treasure');
             })
+        })
+    });
+});
+
+describe('PATCH /api/treasures/:treasure_id', () => {
+    test('should return the updated treasure', () => {
+        return request(app)
+        .patch('/api/treasures/1')
+        .expect(201)
+        .send({
+            'cost_at_auction' : '50.00'
+        })
+        .then(({ body }) => {
+            expect(body.cost_at_auction).toBe(50.00)
+        })
+    });
+    test('should be able to search it in the table', () => {
+        return updateTreasure(
+            {
+                'treasure_id' : '1'
+            },
+            {
+                'cost_at_auction' : '50.00'
+            }
+        )
+        .then(() => {
+            return db.query(
+                `SELECT * FROM treasures
+                WHERE treasure_id = 1;`
+            )
+            .then(({ rows: [body] }) => {
+                expect(body.cost_at_auction).toBe(50.00);
+            })
+        });
+    });
+    test('should get 400 error for invalid input', () => {
+        return request(app)
+        .patch('/api/treasures/sad_path')
+        .expect(400)
+        .then(({ body }) => {
+            expect(body).toEqual({ msg : 'Bad Request' });
         })
     });
 });

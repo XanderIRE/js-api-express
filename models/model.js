@@ -30,7 +30,7 @@ const fetchTreasure = (sortOn = 'age', order = 'ASC', colour = null , max_age, m
     } else {
         return Promise.reject({status:400, msg: 'Bad Request'});
     }
-}
+};
 
 const addTreasure = (newTreasure) => {
     return db.query(`
@@ -43,7 +43,28 @@ const addTreasure = (newTreasure) => {
     .then(({ rows: [body] }) => {
         return body;
     })
-}
+};
+
+const updateTreasure = (idObject, newProperty) => {
+    
+    const [ id ] = Object.values(idObject);
+    const [ key ] = Object.keys(newProperty);
+    const value = parseFloat(Object.values(newProperty)).toFixed(2);
+
+    // Test for invalid input
+    const validKeys = ['treasure_name', 'colour', 'age', 'cost_at_auction', 'shop_id'];
+    if(!validKeys.includes(key)) return Promise.reject({status:400, msg: 'Bad Request'})
+
+    return db.query(
+    `UPDATE treasures
+    SET ${key} = $1
+    WHERE treasure_id = $2
+    RETURNING *;`,
+    [value, id])
+    .then(({ rows: [body] }) => {
+        return body;
+    })
+};
 
 
-module.exports = { fetchTreasure, addTreasure };
+module.exports = { fetchTreasure, addTreasure, updateTreasure };
