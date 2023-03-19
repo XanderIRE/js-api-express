@@ -1,4 +1,4 @@
-const { fetchTreasure } = require('../models/model.js');
+const { fetchTreasure, addTreasure } = require('../models/model.js');
 
 const getTreasures = (req, res, next) => {
     return fetchTreasure(
@@ -16,4 +16,14 @@ const getTreasures = (req, res, next) => {
     })
 }
 
-module.exports = { getTreasures };
+const postTreasures = (req, res, next) => {
+    return addTreasure(req.body)
+    .then((addedTreasure) => {
+        res.status(201).send(addedTreasure);
+    })
+    .catch((err) => {
+        next(err);
+    })
+}
+
+module.exports = { getTreasures, postTreasures };

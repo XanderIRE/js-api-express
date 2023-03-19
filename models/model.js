@@ -32,5 +32,18 @@ const fetchTreasure = (sortOn = 'age', order = 'ASC', colour = null , max_age, m
     }
 }
 
+const addTreasure = (newTreasure) => {
+    return db.query(`
+    INSERT INTO treasures
+    (treasure_name, colour, age, cost_at_auction, shop_id)
+    VALUES
+    ($1, $2, $3, $4, $5)
+    RETURNING *;`,
+    Object.values(newTreasure))
+    .then(({ rows: [body] }) => {
+        return body;
+    })
+}
 
-module.exports = { fetchTreasure };
+
+module.exports = { fetchTreasure, addTreasure };
