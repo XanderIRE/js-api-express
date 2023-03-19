@@ -3,7 +3,7 @@ const db = require('../db/connection.js');
 const fetchTreasure = (sortOn = 'age', order = 'ASC', colour = null , max_age, min_age) => {
     
     // Test age query to get max & min age if exists and stop SQL Injection vulnerability
-    const ageTest = /^\d+$/
+    const ageTest = /^\d+$/;
     let filterByMaxAge = `> 0`;
     if (ageTest.test(max_age)) filterByMaxAge = `< ${max_age}`;
     let filterByMinAge = `> 0`;
@@ -42,7 +42,7 @@ const addTreasure = (newTreasure) => {
     Object.values(newTreasure))
     .then(({ rows: [body] }) => {
         return body;
-    })
+    });
 };
 
 const updateTreasure = (idObject, newProperty) => {
@@ -53,7 +53,7 @@ const updateTreasure = (idObject, newProperty) => {
 
     // Test for invalid input
     const validKeys = ['treasure_name', 'colour', 'age', 'cost_at_auction', 'shop_id'];
-    if(!validKeys.includes(key)) return Promise.reject({status:400, msg: 'Bad Request'})
+    if(!validKeys.includes(key)) return Promise.reject({status:400, msg: 'Bad Request'});
 
     return db.query(
     `UPDATE treasures
@@ -63,7 +63,7 @@ const updateTreasure = (idObject, newProperty) => {
     [value, id])
     .then(({ rows: [body] }) => {
         return body;
-    })
+    });
 };
 
 const removeTreasure = (idObject) => {
@@ -79,10 +79,24 @@ const removeTreasure = (idObject) => {
     .then(({ rows: [body] }) => {
         if (body) return body;
         else {
-            return Promise.reject({status: 404, msg: 'Not Found'})
+            return Promise.reject({status: 404, msg: 'Not Found'});
         }
-    })
+    });
 };
 
+const fetchShops = () => {
+    return db.query(
+        `SELECT shop_id, s.shop_name, s.slogan, SUM (t.cost_at_auction) AS stock_value 
+        FROM shops AS s
+        INNER JOIN treasures AS t
+        USING (shop_id)
+        GROUP BY shop_id, s.shop_name, s.slogan
+        ORDER BY shop_id;`
+    )
+    .then(({ rows }) => {
+        return rows;
+    });
+}
 
-module.exports = { fetchTreasure, addTreasure, updateTreasure, removeTreasure };
+
+module.exports = { fetchTreasure, addTreasure, updateTreasure, removeTreasure, fetchShops };

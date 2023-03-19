@@ -1,4 +1,4 @@
-const { fetchTreasure, addTreasure, updateTreasure, removeTreasure } = require('../models/model.js');
+const { fetchTreasure, addTreasure, updateTreasure, removeTreasure, fetchShops } = require('../models/model.js');
 
 const getTreasures = (req, res, next) => {
     return fetchTreasure(
@@ -13,7 +13,7 @@ const getTreasures = (req, res, next) => {
     })
     .catch((err) => {
         next(err);
-    })
+    });
 };
 
 const postTreasures = (req, res, next) => {
@@ -23,7 +23,7 @@ const postTreasures = (req, res, next) => {
     })
     .catch((err) => {
         next(err);
-    })
+    });
 };
 
 const patchTreasures = (req, res, next) => {
@@ -33,7 +33,7 @@ const patchTreasures = (req, res, next) => {
     })
     .catch((err) => {
         next(err);
-    })
+    });
 };
 
 const deleteTreasures = (req, res, next) => {
@@ -43,7 +43,18 @@ const deleteTreasures = (req, res, next) => {
     })
     .catch((err) => {
         next(err);
-    })
+    });
 };
 
-module.exports = { getTreasures, postTreasures, patchTreasures, deleteTreasures };
+const getShops = (req, res, next) => {
+    return fetchShops()
+    .then((shops) => {
+        res.status(200).send(shops);
+    })
+    .catch((err) => {
+        next(err);
+    });
+};
+
+
+module.exports = { getTreasures, postTreasures, patchTreasures, deleteTreasures, getShops };

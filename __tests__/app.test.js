@@ -117,7 +117,7 @@ describe('POST /api/treasures', () => {
                 'age' : 1,
                 'cost_at_auction' : 1.00,
                 'shop_id' : 1
-            }
+            };
 
             expect(body).toEqual(expected);
         });
@@ -137,8 +137,8 @@ describe('POST /api/treasures', () => {
             )
             .then(({ rows: [body] }) => {
                 expect(body.treasure_name).toBe('New Treasure');
-            })
-        })
+            });
+        });
     });
 });
 
@@ -151,8 +151,8 @@ describe('PATCH /api/treasures/:treasure_id', () => {
             'cost_at_auction' : '50.00'
         })
         .then(({ body }) => {
-            expect(body.cost_at_auction).toBe(50.00)
-        })
+            expect(body.cost_at_auction).toBe(50.00);
+        });
     });
     test('should be able to search it in the table', () => {
         return updateTreasure(
@@ -170,7 +170,7 @@ describe('PATCH /api/treasures/:treasure_id', () => {
             )
             .then(({ rows: [body] }) => {
                 expect(body.cost_at_auction).toBe(50.00);
-            })
+            });
         });
     });
     test('should get 400 error for invalid input', () => {
@@ -179,7 +179,7 @@ describe('PATCH /api/treasures/:treasure_id', () => {
         .expect(400)
         .then(({ body }) => {
             expect(body).toEqual({ msg : 'Bad Request' });
-        })
+        });
     });
 });
 
@@ -196,9 +196,65 @@ describe('DELETE /api/treasures/:treasure_id', () => {
                 `SELECT * FROM treasures
                 WHERE treasure_id = 1;`
                 )
+        })
         .then(({ rowCount }) => {
-            expect(rowCount).toBe(0)
-        })
-        })
-    })
+            expect(rowCount).toBe(0);
+        });
+    });
+});
+
+describe('GET /api/shops', () => {
+    test('should return all shops with properties', () => {
+        return request(app)
+        .get('/api/shops')
+        .expect(200)
+        .then(({ body }) => {
+            body.forEach(shop => {
+                expect(shop.hasOwnProperty("shop_id")).toBe(true);
+                expect(shop.hasOwnProperty("shop_name")).toBe(true);
+                expect(shop.hasOwnProperty("slogan")).toBe(true);
+            });
+        });
+    });
+    test('should return a stock_value property', () => {
+        return request(app)
+        .get('/api/shops')
+        .expect(200)
+        .then(({ body }) => {
+            body.forEach(shop => {
+                expect(shop.hasOwnProperty("stock_value")).toBe(true);
+            });
+            expect(body[0].stock_value).toBe(2421.98);
+        });
+    });
+});
+
+describe('GET /api/treasures/?max_age=... (or min_age) --> more queries', () => {
+    test('GET /api/treasures/?max_age=... filters results by cutoff max age', () => {
+        return request(app)
+        .get('/api/treasures/?sortOn=age&max_age=20')
+        .expect(200)
+        .then(({ body }) => {
+            expect(body[0].age).toBe(1);
+            expect(body[body.length-1].age).toBe(13);
+        });
+    });
+    test('GET /api/treasures/?min_age=... filters results by cutoff min age', () => {
+        return request(app)
+        .get('/api/treasures/?sortOn=age&min_age=20')
+        .expect(200)
+        .then(({ body }) => {
+            expect(body[0].age).toBe(54);
+            expect(body[body.length-1].age).toBe(10865);
+        });
+    });
+    test('GET /api/treasures/?min_age=...&max_age=... filteres results between min and max age', () => {
+        return request(app)
+        .get('/api/treasures/?sortOn=age&min_age=50&max_age=100')
+        .expect(200)
+        .then(({ body }) => {
+            expect(body[0].age).toBe(54);
+            expect(body[body.length-1].age).toBe(90);
+        });
+    });
 });

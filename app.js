@@ -1,5 +1,5 @@
 const express = require('express');
-const { getTreasures, postTreasures, patchTreasures, deleteTreasures } = require('./controllers/controller.js');
+const { getTreasures, postTreasures, patchTreasures, deleteTreasures, getShops } = require('./controllers/controller.js');
 const { postgresErrorHandler, customErrorHandler, internalErrorHandler } = require('./errorHandlers')
 
 const app = express();
@@ -10,10 +10,12 @@ app.get('/api/treasures', getTreasures);
 app.post('/api/treasures', postTreasures);
 app.patch('/api/treasures/:treasure_id', patchTreasures);
 app.delete('/api/treasures/:treasure_id', deleteTreasures);
+app.get('/api/shops', getShops);
 
 // Error Handlers
 app.use(postgresErrorHandler);
 app.use(customErrorHandler);
 app.use(internalErrorHandler);
+
 
 module.exports = app;
