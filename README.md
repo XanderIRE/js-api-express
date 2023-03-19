@@ -6,7 +6,7 @@
 
 - Install psql [here](https://www.postgresql.org/download/)
 
-- Install repo dependencies:
+- Install repo dependencies with this command:
 
 ```cli
 npm install -d
@@ -21,7 +21,7 @@ echo "PGDATABASE=mitchs_rare_treasures" > .env.development
 - Create file **.env.test** with this command:
 
 ```
-echo "PGDATABASE=mitchs_rare_treasures_test" > .env.development
+echo "PGDATABASE=mitchs_rare_treasures_test" > .env.test
 ```
 
 - Create the *development* and *test* databases with this command:
