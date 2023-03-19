@@ -3,7 +3,7 @@ const db = require('../db/connection.js');
 const seed = require('../db/seed.js');
 const testData = require('../db/data/test-data/index.js');
 const app = require('../app.js');
-const { addTreasure, updateTreasure } = require('../models/model.js');
+const { addTreasure, updateTreasure, removeTreasure } = require('../models/model.js');
 
 beforeEach(() => seed(testData));
 afterAll(() => {
@@ -181,4 +181,24 @@ describe('PATCH /api/treasures/:treasure_id', () => {
             expect(body).toEqual({ msg : 'Bad Request' });
         })
     });
+});
+
+describe('DELETE /api/treasures/:treasure_id', () => {
+    test('should return 204 status code for successful delete', () => {
+        return request(app)
+        .delete('/api/treasures/1')
+        .expect(204)
+    });
+    test('should remove the treasure from the database', () => {
+        return removeTreasure({treasure_id: 1})
+        .then(() => {
+            return db.query(
+                `SELECT * FROM treasures
+                WHERE treasure_id = 1;`
+                )
+        .then(({ rowCount }) => {
+            expect(rowCount).toBe(0)
+        })
+        })
+    })
 });

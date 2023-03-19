@@ -66,5 +66,23 @@ const updateTreasure = (idObject, newProperty) => {
     })
 };
 
+const removeTreasure = (idObject) => {
+    
+    const idArray = Object.values(idObject);
 
-module.exports = { fetchTreasure, addTreasure, updateTreasure };
+    return db.query(
+        `DELETE FROM treasures
+        WHERE treasure_id = $1
+        RETURNING *;`,
+        idArray
+    )
+    .then(({ rows: [body] }) => {
+        if (body) return body;
+        else {
+            return Promise.reject({status: 404, msg: 'Not Found'})
+        }
+    })
+};
+
+
+module.exports = { fetchTreasure, addTreasure, updateTreasure, removeTreasure };

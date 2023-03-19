@@ -1,4 +1,4 @@
-const { fetchTreasure, addTreasure, updateTreasure } = require('../models/model.js');
+const { fetchTreasure, addTreasure, updateTreasure, removeTreasure } = require('../models/model.js');
 
 const getTreasures = (req, res, next) => {
     return fetchTreasure(
@@ -36,4 +36,14 @@ const patchTreasures = (req, res, next) => {
     })
 };
 
-module.exports = { getTreasures, postTreasures, patchTreasures };
+const deleteTreasures = (req, res, next) => {
+    return removeTreasure(req.params)
+    .then(() => {
+        res.status(204).send();
+    })
+    .catch((err) => {
+        next(err);
+    })
+};
+
+module.exports = { getTreasures, postTreasures, patchTreasures, deleteTreasures };
