@@ -15,13 +15,13 @@ npm install -d
 - Create file **.env.development** with this command:
 
 ```
-echo "PGDATABASE=mitchs_rare_treasures" > .env.development
+echo "PGDATABASE=rare_treasures" > .env.development
 ```
 
 - Create file **.env.test** with this command:
 
 ```
-echo "PGDATABASE=mitchs_rare_treasures_test" > .env.test
+echo "PGDATABASE=rare_treasures_test" > .env.test
 ```
 
 - Create the *development* and *test* databases with this command:
