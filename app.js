@@ -18,4 +18,12 @@ app.use(customErrorHandler);
 app.use(internalErrorHandler);
 
 
+function myMain() {
+    app.listen(9550, () => {"listening on port 9550"})
+    console.log("listening on Port: 9550")
+}
+
+if (require.main === module) myMain();
+
+
 module.exports = app;
